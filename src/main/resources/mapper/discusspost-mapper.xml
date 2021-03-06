@@ -20,7 +20,7 @@
 
         <!-- 查询结果排序，按照type倒叙（0普通贴，1置顶贴），按照创建时间倒叙（创建时间早的排在后面） -->
         order by type desc , create_time desc
-        <!-- 分页 -->
+        <!-- 分页，从offset开始，共limit条数据 -->
         limit #{offset}, #{limit}
     </select>
 
