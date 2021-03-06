@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nowcoder.community.dao.DiscussPostMapper">     <!-- 与使用的Mapper对应，为DiscussPostMapper接口服务 -->
+
+    <sql id="selectFields">
+        id, user_id, title, content, type, status, create_time, comment_count, score
+    </sql>
+
+    <!-- 根据userId拉取所有帖子 -->
+    <!-- 返回类型为List<DiscussPost>，但是List是Java自带类型，所以这里只需声明DiscussPost即可-->
+    <select id="selectDiscussPosts" resultType="DiscussPost">
+        select <include refid="selectFields"></include>
+        from discuss_post
+        where status != 2              <!-- status 为2是拉黑的帖子，不显示 -->
+        <if test="userId != 0">        <!-- test属性填入条件, 非0的话根据用户id查询帖子，0的话查询所有帖子 -->
+            and user_id = #{userId}
+        </if>                          <!-- if 标签判断userId是否为0，为0的话就不需要这个参数，也就是显示首页的帖子，不为0则是显示用户主页的用户所有帖子 -->
+
+        <!-- 查询结果排序，按照type倒叙（0普通贴，1置顶贴），按照创建时间倒叙（创建时间早的排在后面） -->
+        order by type desc , create_time desc
+        <!-- 分页 -->
+        limit #{offset}, #{limit}
+    </select>
+
+    <!-- 根据userId查询帖子数量 -->
+    <select id="selectDiscussPostRows" resultType="int">
+        select count(id)                <!-- 返回id列的总行数 -->
+        from discuss_post
+        where status != 2
+        <if test="userId!=0">
+            and user_id = #{userId}
+        </if>
+    </select>
+</mapper>
