@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nowcoder.community.dao.UserMapper">     <!-- 与使用的Mapper对应，为Mapper服务 -->
+
+
+    <!-- 复用数据库字段 -->
+    <sql id="insertFields">
+        username, password, salt, email, type, status, activation_code, header_url, create_time
+    </sql>
+    <sql id="selectFields">
+        id, username, password, salt, email, type, status, activation_code, header_url, create_time
+    </sql>
+
+    <!-- SQL -->
+
+    <!-- id 于方法名对应，为方法服务 -->
+    <!-- resultType声明返回类型，这里本应该是全限定名：com.nowcoder.community.entity，但是我们已经在application.properties里配置好了-->
+    <!-- resultType指定返回类型，当该类型不是java的自带类型 -->
+    <!-- from user的user是数据库表；where id的id是数据库字段；而实体类中方法的变量，用#{}框起来 -->
+    <select id="selectById" resultType="User">
+        select <include refid="selectFields"></include>
+        from user
+        where id = #{id};
+    </select>
+
+    <select id="selectByName" resultType="User">
+        select <include refid="selectFields"></include>
+        from user
+        where username = #{username};
+    </select>
+
+    <select id="selectByEmail" resultType="User">
+        select <include refid="selectFields"></include>
+        from user
+        where email = #{email};
+    </select>
+
+    <!-- parameterType声明插入的参数类型，当该类型不是java的自带类型 -->
+    <!-- keyProperty声明主键名，即返回字段对应实体User类中insertUser方法定义的主键变量名 -->
+    <!-- 其实就是向数据库中插入User对象的若干属性 -->
+    <insert id="insertUser" parameterType="User" keyProperty="id">
+        insert into user (<include refid="insertFields"></include>)
+        values(#{username}, #{password}, #{salt}, #{email}, #{type}, #{status}, #{activationCode}, #{headerUrl}, #{createTime})
+    </insert>
+
+    <update id="updateStatus">
+        update user set status = #{status} where id = #{id}
+    </update>
+
+    <update id="updateHeader">
+        update user set header_url = #{headerUrl} where id = #{id}
+    </update>
+
+    <update id="updatePassword">
+        update user set password = #{password} where id = #{id}
+    </update>
+
+</mapper>
