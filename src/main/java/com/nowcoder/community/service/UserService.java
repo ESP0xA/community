@@ -3,6 +3,7 @@ package com.nowcoder.community.service;
 import java.util.*;
 import com.nowcoder.community.dao.UserMapper;
 import com.nowcoder.community.entity.User;
+import com.nowcoder.community.util.CommunityConstant;
 import com.nowcoder.community.util.CommunityUtil;
 import com.nowcoder.community.util.MailClient;
 import org.apache.commons.lang3.StringUtils;
@@ -13,7 +14,7 @@ import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
 @Service
-public class UserService {
+public class UserService implements CommunityConstant {
 
     @Autowired
     private UserMapper userMapper;
@@ -102,5 +103,25 @@ public class UserService {
 
         // 如果注册成功，map为空
         return map;
+    }
+
+    /**
+     * 点击激活链接的时候会传进来如下两个参数
+     * @param userId    用户Id
+     * @param code      用户激活码
+     * @return
+     */
+    public int activation(int userId, String code) {
+        User user = userMapper.selectById(userId);
+
+        if (user.getStatus() == 1) {    // 激活状态status初始化为0，表示未激活状态，如果为1表示已激活
+            return ACTIVATION_REPEAT;
+        } else if (user.getActivationCode().equals(code)) {     // 验证激活码是否正确
+            // 正确则更改激活状态
+            userMapper.updateStatus(userId, 1);
+            return ACTIVATION_SUCCESS;
+        } else {    // 否则验证失败
+            return ACTIVATION_FAILURE;
+        }
     }
 }
