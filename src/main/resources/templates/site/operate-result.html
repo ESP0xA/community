@@ -1,17 +1,17 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 	<link rel="icon" href="https://static.nowcoder.com/images/logo_87_87.png"/>
 	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" crossorigin="anonymous">
-	<link rel="stylesheet" href="../../../../../../../tutorial/第1章%20初识Spring%20Boot，开发社区首页/第一章素材和源码【瑞客论%20坛%20www.ruike1.com】/第一章素材和源码/素材/nowcoder-sql-1.6/nowcoder/css/global.css" />
+	<link rel="stylesheet" th:href="@{/css/global.css}" />
 	<title>牛客网-操作结果</title>
 </head>
 <body class="bg-white">
 	<div class="nk-container">
 		<!-- 头部 -->
-		<header class="bg-dark sticky-top">
+		<header class="bg-dark sticky-top" th:replace="index::header">	<!-- 在这里复用 index.html 中的header。当前header中的内容会被替换 -->
 			<div class="container">
 				<!-- 导航 -->
 				<nav class="navbar navbar-expand-lg navbar-dark">
@@ -62,11 +62,11 @@
 		<div class="main">
 			<div class="container mt-5">
 				<div class="jumbotron">
-					<p class="lead">您的账号已经激活成功,可以正常使用了!</p>
+					<p class="lead" th:text="${msg}">您的账号已经激活成功,可以正常使用了!</p>		<!-- 根据具体业务动态更改这个text -->
 					<hr class="my-4">
 					<p>
-						系统会在 <span id="seconds" class="text-danger">8</span> 秒后自动跳转,
-						您也可以点此 <a id="target" href="login.html" class="text-primary">链接</a>, 手动跳转!
+						系统会在 <span id="seconds" class="text-danger">8</span> 秒后自动跳转,	<!-- 自动跳转逻辑在js中实现 -->
+						您也可以点此 <a id="target" th:href="@{${target}}" class="text-primary">链接</a>, 手动跳转!
 					</p>
 				</div>
 			</div>
