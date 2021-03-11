@@ -1,9 +1,16 @@
 package com.nowcoder.community.controller;
 
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.util.*;
+
+import com.google.code.kaptcha.Producer;
 import com.nowcoder.community.entity.User;
 import com.nowcoder.community.service.UserService;
 import com.nowcoder.community.util.CommunityConstant;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -12,13 +19,22 @@ import org.springframework.web.bind.annotation.RequestAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+import javax.imageio.ImageIO;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
 @Controller
 public class LoginController implements CommunityConstant {
+
+    // 获取注册页面
 
     @RequestMapping(path = "/register", method = RequestMethod.GET)
     public String getRegisterPage() {
         return "/site/register";
     }
+
+
+    // 注册账户
 
     // 将要调用userService的register方法
     @Autowired
@@ -49,6 +65,9 @@ public class LoginController implements CommunityConstant {
         }
     }
 
+
+    // 激活账户
+
     @RequestMapping(path = "/activation/{userId}/{code}", method = RequestMethod.GET)
     public String activation(Model model,
                              @PathVariable("userId") int userId,
@@ -67,9 +86,47 @@ public class LoginController implements CommunityConstant {
         return "/site/operate-result";  // operate-result页面会根据传入的msg参数动态显示结果，根据target参数做出跳转
     }
 
+
+    // 获取登陆页面
+
     @RequestMapping(path = "/login", method = RequestMethod.GET)
     public String getLoginPage() {
         return "/site/login";
+    }
+
+
+    // 获取验证码
+
+    @Autowired
+    private Producer kaptchaProducer;
+
+    private static final Logger logger = LoggerFactory.getLogger(LoginController.class);
+
+    @RequestMapping(path = "/kaptcha", method = RequestMethod.GET)
+    // 返回的一张图片，用response的方式直接放回，所以返回对象是void
+    // 第一次请求登陆页面，会返回一张验证码图片，再次请求登陆的时候，会进行验证。这是一个跨请求的操作，而验证码数据属于敏感信息
+    // 根据以上特征，我们选择使用session存储相关信息。
+    public void getKaptcha(HttpServletResponse response, HttpSession session) {
+
+        // 生成验证码
+        String text = kaptchaProducer.createText();
+        BufferedImage image = kaptchaProducer.createImage(text);
+
+        // 将验证码存入session（存放在服务器内存中）
+        session.setAttribute("kaptcha", text);
+
+        // 将图片输出给浏览器
+        // 声明向浏览器返回的数据类型
+        response.setContentType("image/png");
+        // 获取response的输出流
+        try {
+            OutputStream os = response.getOutputStream();
+            ImageIO.write(image, "png", os);
+        } catch (IOException e) {
+            // e.printStackTrace();
+            logger.error("响应验证码失败：" + e.getMessage());
+        }
+        // response不用手动关闭，它是由SpringMVC去维护的
     }
 
 }
