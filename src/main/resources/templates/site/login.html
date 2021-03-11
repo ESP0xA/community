@@ -91,8 +91,10 @@
 							</div>
 						</div>
 						<div class="col-sm-4">
-							<img th:src="@{/img/captcha.png}" style="width:100px;height:40px;" class="mr-2"/>
-							<a href="javascript:;" class="font-size-12 align-bottom">刷新验证码</a>
+							<!-- 给img标签加个id属性，以便在js中引用 -->
+							<img th:src="@{/kaptcha}" id="kaptcha" style="width:100px;height:40px;" class="mr-2"/>
+							<!-- 调用js实现刷新验证码 -->
+							<a href="javascript:refresh_kaptcha();" class="font-size-12 align-bottom">刷新验证码</a>
 						</div>
 					</div>				
 					<div class="form-group row mt-4">
@@ -179,5 +181,17 @@
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" crossorigin="anonymous"></script>
 	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" crossorigin="anonymous"></script>
 	<script th:src="@{/js/global.js}"></script>
+	<!-- 本项目前端不是使用的原生js，而是jQuerry的js -->
+	<!-- 改变图片路径 -->
+	<!-- 将community改为可配置项，放入global.js中，这样即便以后更改项目名也不用到处改 -->
+	<!-- 刷新逻辑中路径与th:src="@{/kaptcha}"路径相同，从而可能被浏览器智能忽略，所以我们需要给浏览器一个善意的“欺骗”，让它认为路径发生了变化 -->
+	<!-- 于是我们在path后加上随机参数 -->
+	<script>
+		function refresh_kaptcha() {
+			var path = CONTEXT_PATH + "/kaptcha?p=" + Math.random();
+			// 使用jquerry的id选择器改变img标签的src属性
+			$("#kaptcha").attr("src", path);
+		}
+	</script>
 </body>
 </html>
