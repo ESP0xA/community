@@ -9,9 +9,11 @@ import com.google.code.kaptcha.Producer;
 import com.nowcoder.community.entity.User;
 import com.nowcoder.community.service.UserService;
 import com.nowcoder.community.util.CommunityConstant;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -20,6 +22,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import javax.imageio.ImageIO;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
@@ -127,6 +131,58 @@ public class LoginController implements CommunityConstant {
             logger.error("响应验证码失败：" + e.getMessage());
         }
         // response不用手动关闭，它是由SpringMVC去维护的
+    }
+
+
+    // 提交登录信息
+
+    @Value("${server.servlet.context-path")
+    private String contextPath;
+    /**
+     *
+     * @param username      用户名
+     * @param password      密码
+     * @param code          验证码（存放在session里）
+     * @param rememberMe    是否记住用户登录状态（用户选择，记住状态时间较长，反之较短）
+     * @param model         传递数据给DAO
+     * @param session       用于获取验证码文本
+     * @param response      如果登陆成功，将ticket添加到cookie中，再封装到response里返回给用户，用户保存在本地硬盘里
+     * @return
+     */
+    @RequestMapping(path = "/login", method = RequestMethod.POST)
+    public String login(String username, String password, String code, boolean rememberMe,
+                        Model model, HttpSession session, HttpServletResponse response) {
+
+        // 先判断验证码
+
+        //String kaptcha = session.getAttribute("kaptcha").toString();
+        String kaptcha = (String) session.getAttribute("kaptcha");
+        // 验证码为空或者不相等（不区分大小写）
+        if (StringUtils.isBlank(kaptcha) || StringUtils.isBlank(code) || !kaptcha.equalsIgnoreCase(code)) {
+            // 告诉login模板
+            model.addAttribute("codeMsg", "验证码不正确！");
+            return "/site/login";
+        }
+
+        // 检查账号密码
+
+        int expiredSeconds = rememberMe ? REMEMBER_EXPIRED_SECONDS : DEFAULT_EXPIRED_SECONDS;
+        Map<String, Object> map = userService.login(username, password, expiredSeconds);
+        if (map.containsKey("ticket")) {    // 验证账号密码成功
+            // 向浏览器发送包含ticket信息的cookie
+            Cookie cookie = new Cookie("ticket", map.get("ticket").toString());
+            // 设置cookie生效路径
+            cookie.setPath(contextPath);
+            // 设置cookie有效期
+            cookie.setMaxAge(expiredSeconds);
+            response.addCookie(cookie);
+            return "redirect:/index";
+        } else {                            // 登陆失败
+            // 如果不是username的问题，那么参数可以是null，在前端展示的时候也不会出问题
+            model.addAttribute("usernameMsg", map.get("usernameMsg"));
+            model.addAttribute("passwordMsg", map.get("passwordMsg"));
+            return "/site/login";
+        }
     }
 
 }
