@@ -16,10 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestAttribute;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.*;
 
 import javax.imageio.ImageIO;
 import javax.servlet.http.Cookie;
@@ -185,4 +182,18 @@ public class LoginController implements CommunityConstant {
         }
     }
 
+
+    // 退出登录
+
+    /**
+     *
+     * @param ticket    从cookie中获取ticket给service更改dao的数据
+     * @return
+     */
+    @RequestMapping(path = "/logout", method = RequestMethod.GET)
+    public String logout(@CookieValue("ticket") String ticket) {
+        userService.logout(ticket);
+        // 分别有GET请求的login和POST请求的login，重定向的时候默认的是GET请求的login
+        return "redirect:/login";
+    }
 }

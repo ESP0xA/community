@@ -192,4 +192,10 @@ public class UserService implements CommunityConstant {
 
         return map;
     }
+
+    // 用户退出服务
+
+    public void logout(String ticket) {
+        loginTicketMapper.updateStatus(ticket, 1);
+    }
 }
