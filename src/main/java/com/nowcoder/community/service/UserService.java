@@ -1,6 +1,8 @@
 package com.nowcoder.community.service;
 
 import java.util.*;
+
+import com.nowcoder.community.dao.LoginTicketMapper;
 import com.nowcoder.community.dao.UserMapper;
 import com.nowcoder.community.entity.User;
 import com.nowcoder.community.util.CommunityConstant;
@@ -38,6 +40,12 @@ public class UserService implements CommunityConstant {
     @Value("${server.servlet.context-path}")
     private String contextPath;
 
+    // 用户注册服务
+    /**
+     * 点击注册按钮会传入User对象
+     * @param user
+     * @return
+     */
     public Map<String, Object> register(User user) {
 
         Map<String, Object> map = new HashMap<>();
@@ -105,6 +113,8 @@ public class UserService implements CommunityConstant {
         return map;
     }
 
+
+    // 用户激活服务
     /**
      * 点击激活链接的时候会传进来如下两个参数
      * @param userId    用户Id
@@ -124,4 +134,6 @@ public class UserService implements CommunityConstant {
             return ACTIVATION_FAILURE;
         }
     }
+
+
 }

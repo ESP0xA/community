@@ -2,7 +2,10 @@ package com.nowcoder.community;
 
 import java.util.*;
 import com.nowcoder.community.dao.DiscussPostMapper;
+import com.nowcoder.community.dao.LoginTicketMapper;
 import com.nowcoder.community.entity.DiscussPost;
+import com.nowcoder.community.entity.LoginTicket;
+import com.nowcoder.community.util.CommunityUtil;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,5 +35,31 @@ public class MapperTests {
 
     }
 
+    @Autowired
+    private LoginTicketMapper loginTicketMapper;
+
+    @Test
+    public void testInsertLoginTicket() {
+        LoginTicket loginTicket = new LoginTicket();
+        loginTicket.setUserId(101);
+        loginTicket.setTicket(CommunityUtil.generateUUID());
+        loginTicket.setStatus(0);
+        loginTicket.setExpired(new Date(System.currentTimeMillis() + 1000 * 60 * 10));
+
+        loginTicketMapper.insertLoginTicket(loginTicket);
+
+    }
+
+    @Test
+    public void testSelectLoginTicket() {
+        LoginTicket loginTicket;
+        loginTicket = loginTicketMapper.selectByTicket("e67295fc18fd45638df912daabb430ed");
+        System.out.println(loginTicket);
+    }
+
+    @Test
+    public void testUpdateLoginTicket() {
+        loginTicketMapper.updateStatus("e67295fc18fd45638df912daabb430ed", 1);
+    }
 
 }
