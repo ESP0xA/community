@@ -140,7 +140,7 @@ public class UserService implements CommunityConstant {
     @Autowired
     private LoginTicketMapper loginTicketMapper;
 
-    public Map<String, Object> login(String username, String password, int expiredSecond) {
+    public Map<String, Object> login(String username, String password, int expiredSeconds) {
 
         Map<String, Object> map = new HashMap<>();
 
@@ -185,7 +185,7 @@ public class UserService implements CommunityConstant {
         loginTicket.setUserId(user.getId());
         loginTicket.setTicket(CommunityUtil.generateUUID());
         loginTicket.setStatus(0);
-        loginTicket.setExpired(new Date(System.currentTimeMillis() + expiredSecond * 1000));
+        loginTicket.setExpired(new Date(System.currentTimeMillis() + expiredSeconds * 1000L));
         loginTicketMapper.insertLoginTicket(loginTicket);
         // 登陆成功
         map.put("ticket", loginTicket.getTicket());
