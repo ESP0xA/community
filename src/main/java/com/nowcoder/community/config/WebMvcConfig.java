@@ -1,6 +1,7 @@
 package com.nowcoder.community.config;
 
 import com.nowcoder.community.controller.Interceptor.AlphaInterceptor;
+import com.nowcoder.community.controller.Interceptor.LoginTicketInterceptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
@@ -15,6 +16,9 @@ public class WebMvcConfig implements WebMvcConfigurer {
     // 配置拦截器，需要把拦截器注入进来
     @Autowired
     private AlphaInterceptor alphaInterceptor;
+
+    @Autowired
+    private LoginTicketInterceptor loginTicketInterceptor;
 
     /**
      *
@@ -33,5 +37,9 @@ public class WebMvcConfig implements WebMvcConfigurer {
                 // 拦截器拦截指定路径的请求
                 .addPathPatterns("/register", "/login");
 
+        registry.addInterceptor(loginTicketInterceptor)
+                // /** 表示static目录下所有文件夹，这个会匹配static目录下所有的css、js和图片文件
+                .excludePathPatterns("/*/*.css", "/*/*.js", "/*/*.png", "/*/*.jpg", "/*/*.jpeg");
+                // 拦截器拦截所有路径的请求
     }
 }

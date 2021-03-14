@@ -10,7 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
- * 拦截器
+ * 拦截器测试
  */
 @Component
 public class AlphaInterceptor implements HandlerInterceptor {
