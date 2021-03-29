@@ -202,7 +202,7 @@ public class UserService implements CommunityConstant {
 
     // 查询Ticket
 
-    public LoginTicket fingLoginTicket(String ticket) {
+    public LoginTicket findLoginTicket(String ticket) {
         return loginTicketMapper.selectByTicket(ticket);
     }
 

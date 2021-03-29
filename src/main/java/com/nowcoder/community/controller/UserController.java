@@ -165,17 +165,11 @@ public class UserController {
             return "/site/setting";
         }
 
-        // 检查登陆状态
-        String ticket = CookieUtil.getValue(request, "ticket");
-        if (ticket == null) return "/site/login";                                                                       // 未登录
+        if (hostHolder == null) return "/site/login";                                                                   // 未登录，事实上未登录用户会被拦截器拒绝请求，此处功能冗余，但更保险
 
-        // 检查登陆凭证，是否为空，是否有效，是否过期
-        LoginTicket loginTicket = userService.fingLoginTicket(ticket);
-        if (loginTicket == null || loginTicket.getStatus() != 0 || !loginTicket.getExpired().after(new Date())) {
-            return "/site/login";                                                                                       // 凭证无效
-        }
+        User user = hostHolder.getUser();
+
         // 有效的登陆状态
-        User user = userService.findUserById(loginTicket.getUserId());                                                  // 获取User
         if(!userService.checkPassword(user, curPassword)) {                                                             // 密码不正确
             model.addAttribute("passwordNotCorrectMsg", "密码不正确！");
             return "/site/setting";
