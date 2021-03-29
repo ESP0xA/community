@@ -1,6 +1,7 @@
 package com.nowcoder.community.config;
 
 import com.nowcoder.community.controller.Interceptor.AlphaInterceptor;
+import com.nowcoder.community.controller.Interceptor.LoginRequiredIntercepter;
 import com.nowcoder.community.controller.Interceptor.LoginTicketInterceptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
@@ -20,6 +21,9 @@ public class WebMvcConfig implements WebMvcConfigurer {
     @Autowired
     private LoginTicketInterceptor loginTicketInterceptor;
 
+    @Autowired
+    private LoginRequiredIntercepter loginRequiredIntercepter;
+
     /**
      *
      * @param registry  Spring在调用的时候会把该对象传进来，我们利用该对象注册拦截器
@@ -38,6 +42,11 @@ public class WebMvcConfig implements WebMvcConfigurer {
                 .addPathPatterns("/register", "/login");
 
         registry.addInterceptor(loginTicketInterceptor)
+                // /** 表示static目录下所有文件夹，这个会匹配static目录下所有的css、js和图片文件
+                .excludePathPatterns("/*/*.css", "/*/*.js", "/*/*.png", "/*/*.jpg", "/*/*.jpeg");
+                // 拦截器拦截所有路径的请求
+
+        registry.addInterceptor(loginRequiredIntercepter)
                 // /** 表示static目录下所有文件夹，这个会匹配static目录下所有的css、js和图片文件
                 .excludePathPatterns("/*/*.css", "/*/*.js", "/*/*.png", "/*/*.jpg", "/*/*.jpeg");
                 // 拦截器拦截所有路径的请求
