@@ -209,11 +209,30 @@ public class UserService implements CommunityConstant {
 
     /**
      * 更新用户头像访问路径
-     * @param userId    用户名
+     * @param userId    用户ID
      * @param headerUrl 用户头像路径
      * @return          更新的行数
      */
     public int updateHeader(int userId, String headerUrl) {
         return userMapper.updateHeader(userId, headerUrl);
     }
+
+
+
+    public boolean checkPassword(User user, String password) {
+        password = CommunityUtil.md5(password + user.getSalt());
+        return user.getPassword().equals(password);
+    }
+
+    /**
+     * 更新用户密码
+     * @param user      用户对象
+     * @param password  已经确认合法的密码
+     * @return          更新的行数
+     */
+    public int updatePassword(User user, String password) {
+        password = CommunityUtil.md5(password + user.getSalt());
+        return userMapper.updatePassword(user.getId(), password);
+    }
+
 }

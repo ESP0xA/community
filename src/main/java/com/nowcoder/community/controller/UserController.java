@@ -1,8 +1,10 @@
 package com.nowcoder.community.controller;
 
+import com.nowcoder.community.entity.LoginTicket;
 import com.nowcoder.community.entity.User;
 import com.nowcoder.community.service.UserService;
 import com.nowcoder.community.util.CommunityUtil;
+import com.nowcoder.community.util.CookieUtil;
 import com.nowcoder.community.util.HostHolder;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -14,13 +16,17 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+
+import java.util.*;
 
 @Controller
 @RequestMapping("/user")
@@ -139,4 +145,40 @@ public class UserController {
     }
 
 
+    @RequestMapping(path = "/password", method = RequestMethod.POST)
+    //@ResponseBody
+    public String updatePassword(Model model, HttpServletRequest request, String curPassword, String newPassword, String newPasswordConfirm) {
+        //Map<String, Object> map = userService.updatePassword()
+        // 非法判断
+        // 原密码不做判断，直接查询是否正确
+        // 新密码先判断两次输入是否一致，在判断长度是否大于等于8位，
+        if (newPassword.length() < 8) {
+            model.addAttribute("newPasswordLengthMsg", "密码长度不能小于8位!");
+            return "/site/setting";
+        }
+        if (!newPassword.equals(newPasswordConfirm)) {
+            model.addAttribute("newPasswordNotMatchMsg", "两次密码输入不一致！");
+            return "/site/setting";
+        }
+
+        // 检查登陆状态
+        String ticket = CookieUtil.getValue(request, "ticket");
+        if (ticket == null) return "/site/login";                                                                       // 未登录
+
+        // 检查登陆凭证，是否为空，是否有效，是否过期
+        LoginTicket loginTicket = userService.fingLoginTicket(ticket);
+        if (loginTicket == null || loginTicket.getStatus() != 0 || !loginTicket.getExpired().after(new Date())) {
+            return "/site/login";                                                                                       // 凭证无效
+        }
+        // 有效的登陆状态
+        User user = userService.findUserById(loginTicket.getUserId());                                                  // 获取User
+        if(!userService.checkPassword(user, curPassword)) {                                                             // 密码不正确
+            model.addAttribute("passwordNotCorrectMsg", "密码不正确！");
+            return "/site/setting";
+        }
+        // 密码正确，更新密码
+        userService.updatePassword(user, newPassword);
+        // 退出登录
+        return "redirect:/logout";
+    }
 }
