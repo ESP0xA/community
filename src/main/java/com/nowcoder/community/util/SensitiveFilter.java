@@ -114,9 +114,23 @@ public class SensitiveFilter {
             } else {
                 ++position;
             }
+
+            // 处理position指针溢出情况
+            // 当position指针溢出时，如果直接添加以recorder开头的substring，那么当：
+            // position指针匹配了某个敏感词的前缀，恰好溢出，同时敏感词列表中存在一个为当前敏感词的子串的敏感词时，就会该子串敏感词就会被忽略
+            // 这是教程算法中的一个不完善的地方，在此做出修正。
+            if (position >= text.length()) {
+                if (recorder < text.length()) {
+                    sb.append(text.charAt(recorder));
+                }
+                position = ++recorder;
+                tempNode = rootNode;
+            }
         }
         // 将最后一批字符计入结果
-        sb.append(text.substring(recorder));
+        //sb.append(text.substring(recorder));
+
+
         return sb.toString();
     }
 
