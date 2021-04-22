@@ -92,8 +92,8 @@ public class User {
         return createTime;
     }
 
-    public void setCreateTime(Date creatTime) {
-        this.createTime = creatTime;
+    public void setCreateTime(Date createTime) {
+        this.createTime = createTime;
     }
 
     @Override

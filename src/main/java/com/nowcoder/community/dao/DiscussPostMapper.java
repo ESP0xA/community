@@ -20,4 +20,7 @@ public interface DiscussPostMapper {
     // @Param 另外一个重要目的是：SQL里需要用到动态的条件（比如这里的userId在首页不需要用到，而在个人主页用户所有帖子时需要用到）
     // 且这个动态的条件需要用到该参数，恰巧该方法只有一个参数且在<if>里使用，此时必须要加 @Param
     int selectDiscussPostRows(@Param("userId")int userId);
+
+    // 插入新帖子
+    int insertDiscussPost(DiscussPost discussPost);
 }
