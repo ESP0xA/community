@@ -59,4 +59,15 @@ public class AlphaController {
 
         return "session is got";
     }
+
+    // ajax demo
+    // method = RequestMethod.POST      通常情况下，页面需通过异步的方式要给服务器提交一些数据
+    // @ResponseBody                    因为是异步请求，服务器并非返回一个网页
+    @RequestMapping(path = "/ajax", method = RequestMethod.POST)
+    @ResponseBody
+    public String testAjax(String name, int age) {
+        System.out.println(name);
+        System.out.println(age);
+        return CommunityUtil.getJSONString(0, "操作成功！");
+    }
 }
