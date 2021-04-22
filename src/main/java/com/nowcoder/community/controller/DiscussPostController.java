@@ -3,10 +3,13 @@ package com.nowcoder.community.controller;
 import com.nowcoder.community.entity.DiscussPost;
 import com.nowcoder.community.entity.User;
 import com.nowcoder.community.service.DiscussPostService;
+import com.nowcoder.community.service.UserService;
 import com.nowcoder.community.util.CommunityUtil;
 import com.nowcoder.community.util.HostHolder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -22,6 +25,9 @@ public class DiscussPostController {
 
     @Autowired
     private HostHolder hostHolder;
+
+    @Autowired
+    private UserService userService;
 
     @RequestMapping(path = "/add", method = RequestMethod.POST)
     @ResponseBody                                                       // 返回字符串而非网页
@@ -44,5 +50,19 @@ public class DiscussPostController {
 
         // 如果报错，将来会有统一处理 --> future
         return CommunityUtil.getJSONString(0, "发布成功！");
+    }
+
+    // 根据id查询帖子，一般会将id拼到路径中
+    @RequestMapping(path = "/detail/{discussPostId}", method = RequestMethod.GET)
+    public String getDiscussPost(@PathVariable("discussPostId") int discussPostId, Model model) {
+        // 查询帖子
+        DiscussPost discussPost = discussPostService.findDiscussPostById(discussPostId);
+        model.addAttribute("post", discussPost);
+        // 查询对应User
+        User user = userService.findUserById(discussPost.getUserId());
+        model.addAttribute("user", user);
+        // 暂时不查询帖子对应回复
+
+        return "/site/discuss-detail";
     }
 }

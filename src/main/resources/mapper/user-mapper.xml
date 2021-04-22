@@ -17,7 +17,7 @@
 
     <!-- id 于方法名对应，为方法服务 -->
     <!-- resultType声明返回类型，这里本应该是全限定名：com.nowcoder.community.entity，但是我们已经在application.properties里配置好了-->
-    <!-- resultType指定返回类型，当该类型不是java的自带类型 -->
+    <!-- resultType指定返回类型，如果是返回主键的类型的话，可以省略。否则如果返回查询数量的话，不可省略-->
     <!-- from user的user是数据库表；where id的id是数据库字段；而实体类中方法的变量，用#{}框起来 -->
     <select id="selectById" resultType="User">
         select <include refid="selectFields"></include>
