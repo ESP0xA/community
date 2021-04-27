@@ -145,7 +145,7 @@
 								<ul class="d-inline float-right">
 									<li class="d-inline ml-2">赞 11</li>
 									<li class="d-inline ml-2">|</li>
-									<li class="d-inline ml-2">回帖 7</li>
+									<li class="d-inline ml-2">回帖 <span th:text="${map.post.commentCount}">99</span></li>
 								</ul>
 							</div>
 						</div>
@@ -153,7 +153,7 @@
 
 				</ul>
 				<!-- 分页 -->
-				<nav class="mt-5" th:if="${page.rows > 0}">	<!-- 如果没有数据则不显示 -->
+				<nav class="mt-5" th:if="${page.rows > 0}" th:fragment="pagination">	<!-- 如果没有数据则不显示 --> <!-- 让其他页面可以复用首页分页逻辑 -->
 					<ul class="pagination justify-content-center">
 						<li class="page-item">
 							<a class="page-link" th:href="@{${page.path}(current=1)}">首页</a>	<!-- thymeleaf会自动转换 (current=1) 为 ?current=1 -->
