@@ -47,4 +47,9 @@ public class DiscussPostService {
     public DiscussPost findDiscussPostById(int id) {
         return discussPostMapper.selectDiscussPostById(id);
     }
+
+    // 更新评论数量（此服务不仅可以依赖于当前mapper，还可以依赖于其他service，我们将在CommentService中使用该业务组件）
+    public int updateCommentCount(int id, int commentCount) {
+        return discussPostMapper.updateCommentCount(id, commentCount);
+    }
 }
