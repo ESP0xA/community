@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nowcoder.community.dao.MessageMapper">     <!-- 与使用的Mapper对应，为DiscussPostMapper接口服务 -->
+
+    <sql id="selectFields">
+        id, from_id, to_id, conversation_id, content, status, create_time
+    </sql>
+
+    <select id="selectConversations" resultType="Message">
+        select <include refid="selectFields"></include>
+        from message
+        where id in (
+            <!-- 筛选id 我们从sessage表中选择若干条私信id，且满足如下三个条件，把这些id 按照conversation_id划分若干组，相同conversation_id的选id最大的那一条id，即私信列表最新的私信 -->
+            select max(id) from message                         <!-- 选择id最大的那一条，也就是一组会话最后一条私信 -->
+            where status != 2                                   <!-- status 为2时表明私信已删除 -->
+            and from_id != 1                                    <!-- from_id 为1表示系统私信 -->
+            and (from_id = #{userId} or to_id = #{userId})      <!-- 选择当前登陆用户的私信，不管他是发信人还是收信人 -->
+            group by conversation_id                            <!-- 按照 会话id conversateion_id 分组，同一个会话id 属于一组 -->
+            <!-- 筛选id -->
+        )
+        order by id desc
+        limit #{offset}, #{limit}
+    </select>
+
+    <select id="selectConversationCount" resultType="int">
+        select count(m.maxid) from (
+            select max(id) as maxid from message        <!-- 子查询别名设为 maxid -->
+            where status != 2
+            and from_id != 1
+            and (from_id = #{userId} or to_id = #{userId})
+            group by conversation_id
+        ) as m          <!-- 外层查询别名设为m -->
+    </select>
+
+    <select id="selectLetters" resultType="Message">
+        select <include refid="selectFields"></include>
+        from message
+        where status != 2
+        and from_id != 1
+        and conversation_id = #{conversationId}
+        order by id desc
+        limit #{offset}, #{limit}
+    </select>
+
+    <select id="selectLetterCount" resultType="int">
+        select count(id)
+        from message
+        where status != 2
+        and from_id != 1
+        and conversation_id = #{conversationId}
+    </select>
+
+    <select id="selectLetterUnreadCount" resultType="int">
+        select count(id)
+        from message
+        where status = 0
+        and from_id != 1
+        and to_id = #{userId}                    <!-- 未读消息数量，发送者一定不是自己 -->
+        <!-- conversationId 是可选参数对应两种查询情况 -->
+        <if test="conversationId != null">
+            and conversation_id = #{conversationId}
+        </if>
+    </select>
+</mapper>
