@@ -8,6 +8,10 @@
         id, from_id, to_id, conversation_id, content, status, create_time
     </sql>
 
+    <sql id="insertFields">
+        from_id, to_id, conversation_id, content, status, create_time
+    </sql>
+
     <select id="selectConversations" resultType="Message">
         select <include refid="selectFields"></include>
         from message
@@ -63,4 +67,17 @@
             and conversation_id = #{conversationId}
         </if>
     </select>
+
+    <insert id="insertMessage" parameterType="Message" keyProperty="id">        <!-- 主键 id 自增长，声明对应字段 id ??????-->
+        insert into message(<include refid="insertFields"></include>)
+        values(#{fromId}, #{toId}, #{conversationId}, #{content}, #{status}, #{createTime})
+    </insert>
+
+    <update id="updateStatus">
+        update message set status = #{status}
+        where id in
+        <foreach collection="ids" item="id" open="(" separator="," close=")">        <!-- 遍历 ids 列表，对于每个 id, 拼到括号中-->
+            #{id}
+        </foreach>
+    </update>
 </mapper>
