@@ -21,7 +21,7 @@ public class RedisConfig {
         // 设置key序列化方式（数据转换方式，java to redis）
         template.setKeySerializer(RedisSerializer.string());    // RedisSerializer.string()返回一个能够序列化字符串的序列化器 RedisSerializer<String>
         // 设置value序列化方式
-        template.setValueSerializer(RedisSerializer.json());    // value 会有各种数据结构，我们将其序列化为json
+        template.setValueSerializer(RedisSerializer.json());    // value 会有各种数据结构，普通的值、集合、列表等等，我们将其序列化为json
         // 设置hash的key的序列化方式
         template.setHashKeySerializer(RedisSerializer.string());
         // 设置hash的value的序列化方式

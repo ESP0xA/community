@@ -143,7 +143,7 @@
 								<!-- 动态获取帖子的用户名和发帖时间，发帖时间使用thymeleaf内置的日期格式化方法 -->
 								<u class="mr-3" th:utext="${map.user.username}">寒江雪</u> 发布于 <b th:text="${#dates.format(map.post.createTime, 'yyyy-MM-dd HH:mm:ss')}">2019-04-15 15:32:18</b>
 								<ul class="d-inline float-right">
-									<li class="d-inline ml-2">赞 11</li>
+									<li class="d-inline ml-2">赞 <span th:text="${map.likeCount}">11</span></li>	<!-- 显示赞的数量 -->
 									<li class="d-inline ml-2">|</li>
 									<li class="d-inline ml-2">回帖 <span th:text="${map.post.commentCount}">99</span></li>
 								</ul>
