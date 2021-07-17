@@ -24,7 +24,7 @@ public class LikeController {
 
     @RequestMapping(path = "/like", method = RequestMethod.POST) // 点赞需要post一些信息
     @ResponseBody   // 点赞需要用到异步请求，所以需要用到responseBody
-    public String Like(int entityType, int entityId) { // 传入被点赞对象
+    public String Like(int entityType, int entityId, int entityUserId) { // 传入被点赞对象
         /*
         System.out.println(entityType);
         System.out.println(entityId);
@@ -33,7 +33,7 @@ public class LikeController {
         // 可以使用拦截器判断用户是否登录，将来还会用SpringSecurity对权限问题统一处理，在此先不做判断。
 
         // 点赞
-        likeService.like(user.getId(), entityType, entityId);
+        likeService.like(user.getId(), entityType, entityId, entityUserId);
         // 显示点赞的数量
         long likeCount = likeService.findEntityLikeCount(entityType, entityId);
         // 状态

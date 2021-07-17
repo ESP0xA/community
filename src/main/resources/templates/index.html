@@ -44,7 +44,7 @@
 									<img th:src="${loginUser.headerUrl}" class="rounded-circle" style="width:30px;"/>
 								</a>
 								<div class="dropdown-menu" aria-labelledby="navbarDropdown">
-									<a class="dropdown-item text-center" href="site/profile.html">个人主页</a>
+									<a class="dropdown-item text-center" th:href="@{|/user/profile/${loginUser.id}|}">个人主页</a>
 									<a class="dropdown-item text-center" th:href="@{/user/setting}">账号设置</a>
 									<a class="dropdown-item text-center" th:href="@{/logout}">退出登录</a>
 									<div class="dropdown-divider"></div>
@@ -125,7 +125,7 @@
 					<li class="media pb-3 pt-3 mb-3 border-bottom" th:each="map:${discussPosts}">	<!-- thymeleaf循环变量 discussPosts 循环处理 li 标签声明一个变量 map 指代discussPosts中的变量-->
 
 						<!-- 用户头像 -->
-						<a href="site/profile.html">
+						<a th:href="@{|/user/profile/${map.user.id}|}">
 							<!-- 动态获取用户头像 -->
 							<!-- map.user其实是thymeleaf自动调用了map对象的get方法 map.get("user"); User对象同理 -->
 							<img th:src="${map.user.headerUrl}" class="mr-4 rounded-circle" alt="用户头像" style="width:50px;height:50px;">
